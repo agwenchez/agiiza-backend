@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  mumchats-dev-db:
+    image: postgres:13
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_USER: agwenchez
+      POSTGRES_DB: agiiza
+      POSTGRES_PASSWORD: Agwenchez254
+    networks:
+      - mumchatsapi
+      
+networks:
+  mumchatsapi:
