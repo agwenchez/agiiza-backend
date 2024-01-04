@@ -1,15 +1,15 @@
 version: '3.8'
 services:
-  mumchats-dev-db:
+  agiiza-dev-db:
     image: postgres:13
     ports:
       - 5436:5432
     environment:
-      POSTGRES_USER: agwenchez
-      POSTGRES_DB: agiiza
-      POSTGRES_PASSWORD: Agwenchez254
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
-      - mumchatsapi
-      
+      - agiizaapi
+
 networks:
-  mumchatsapi:
+  agiizaapi:
