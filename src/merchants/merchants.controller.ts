@@ -27,7 +27,7 @@ export class MerchantsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.merchantsService.findOne(+id);
+    return this.merchantsService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class MerchantsController {
     @Param('id') id: string,
     @Body() updateMerchantDto: UpdateMerchantDto,
   ) {
-    return this.merchantsService.update(+id, updateMerchantDto);
+    return this.merchantsService.update(id, updateMerchantDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.merchantsService.remove(+id);
+    return this.merchantsService.remove(id);
   }
 }

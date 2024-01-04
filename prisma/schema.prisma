@@ -17,11 +17,12 @@ model Merchants {
   firstName      String       @db.VarChar(100)
   lastName       String       @db.VarChar(100)
   storeName      String       @db.VarChar(200)
+  storeAddress     String       @db.VarChar(200)
   nearbyLandmark String       @db.VarChar(400)
   email          String       @unique @db.VarChar(100)
   phoneNumber    String       @unique @db.VarChar(20)
-  Categories     Categories[]
-  Tags           Tags[]
+  categories     Categories[]
+  tags           Tags[]
 
   @@map("merchants")
 }
