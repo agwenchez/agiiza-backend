@@ -1,9 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MerchantsService } from './merchants.service';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 
-@Controller('merchants')
+@Controller('api/v1/merchants')
 export class MerchantsController {
   constructor(private readonly merchantsService: MerchantsService) {}
 
@@ -19,16 +27,19 @@ export class MerchantsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.merchantsService.findOne(+id);
+    return this.merchantsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMerchantDto: UpdateMerchantDto) {
-    return this.merchantsService.update(+id, updateMerchantDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateMerchantDto: UpdateMerchantDto,
+  ) {
+    return this.merchantsService.update(id, updateMerchantDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.merchantsService.remove(+id);
+    return this.merchantsService.remove(id);
   }
 }

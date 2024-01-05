@@ -4,11 +4,11 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  constructor(configService: ConfigService) {
+  constructor() {
     super({
       datasources: {
         db: {
-          url: configService.get('DATABASE_URL'),
+          url: 'postgresql://agwenchez:Agwenchez254@localhost:5436/agiiza?schema=public',
         },
       },
     });
