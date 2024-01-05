@@ -3,6 +3,7 @@ import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CategoriesService } from 'src/categories/categories.service';
+import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
 
 @Injectable()
 export class MerchantsService {
@@ -28,20 +29,17 @@ export class MerchantsService {
     try {
       // Create or find existing categories
       const categoryPromises = categories.map(async (categoryName) => {
-        const existingCategory = await this.prismaService.categories.findUnique(
-          {
-            where: { category_name: categoryName },
-          },
+        const existingCategory = await this.categoryService.findOne(
+          categoryName,
         );
 
         if (existingCategory) {
           return { id: existingCategory.id };
         } else {
-          const createdCategory = await this.prismaService.categories.create({
-            data: {
-              category_name: categoryName,
-            },
-          });
+          const createCategoryDto = { category_name: categoryName };
+          const createdCategory = await this.categoryService.create(
+            createCategoryDto,
+          );
           return { id: createdCategory.id };
         }
       });
@@ -50,14 +48,14 @@ export class MerchantsService {
 
       // Create or find existing tags
       const tagPromises = tags.map(async (tagName) => {
-        const existingTag = await this.prismaService.tags.findUnique({
+        const existingTag = await this.prismaService.tag.findUnique({
           where: { tag_name: tagName },
         });
 
         if (existingTag) {
           return { id: existingTag.id };
         } else {
-          const createdTag = await this.prismaService.tags.create({
+          const createdTag = await this.prismaService.tag.create({
             data: {
               tag_name: tagName,
             },
@@ -69,7 +67,7 @@ export class MerchantsService {
       const resolvedTags = await Promise.all(tagPromises);
 
       // Create merchant with basic information and connected categories and tags
-      const newMerchant = await this.prismaService.merchants.create({
+      const newMerchant = await this.prismaService.merchant.create({
         data: {
           ...merchantData,
           categories: {
@@ -93,7 +91,7 @@ export class MerchantsService {
 
   async findAll() {
     try {
-      const merchants = await this.prismaService.merchants.findMany();
+      const merchants = await this.prismaService.merchant.findMany();
       return merchants;
     } catch (error) {
       console.log('Error', error);
@@ -103,7 +101,7 @@ export class MerchantsService {
 
   async findOne(id: string) {
     try {
-      const merchants = await this.prismaService.merchants.findUnique({
+      const merchants = await this.prismaService.merchant.findUnique({
         where: { id },
       });
       return merchants;
