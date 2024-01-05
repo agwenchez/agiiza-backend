@@ -13,19 +13,7 @@ export class MerchantsService {
   ) {}
   async create(createMerchantDto: CreateMerchantDto) {
     const { categories, tags, ...merchantData } = createMerchantDto;
-    console.log('Merchant', createMerchantDto);
-
-    // const {
-    //   firstName,
-    //   lastName,
-    //   nearbyLandmark,
-    //   phoneNumber,
-    //   storeName,
-    //   storeAddress,
-    //   categories,
-    //   tags,
-    //   email,
-    // } = createMerchantDto;
+    // console.log('Merchant', createMerchantDto);
     try {
       // Create or find existing categories
       const categoryPromises = categories.map(async (categoryName) => {

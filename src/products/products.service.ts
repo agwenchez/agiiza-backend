@@ -9,7 +9,6 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     const { prices, merchantId, ...productData } = createProductDto;
-
     try {
       // Create product with basic information
       const createdProduct = await this.prismaService.product.create({

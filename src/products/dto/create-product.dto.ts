@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -21,6 +21,8 @@ export class CreateProductDto {
   @IsString()
   merchantId: string;
 
+  @IsNotEmpty()
+  @IsArray()
   prices: CreatePriceDto[];
 }
 
