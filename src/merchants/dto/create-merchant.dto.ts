@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMerchantDto {
   @IsNotEmpty()
@@ -31,10 +37,10 @@ export class CreateMerchantDto {
   phoneNumber: string;
 
   @IsOptional()
-  @IsString()
+  //   @IsArray()
   categories: string[];
 
   @IsOptional()
-  @IsString()
+  //   @IsArray()
   tags: string[];
 }

@@ -30,9 +30,17 @@ export class CategoriesService {
     }
   }
 
-  // async findOne(id: string) {
-  //   return `This action returns a #${id} category`;
-  // }
+  async findOne(category_name: string) {
+    try {
+      const category = await this.prismaService.categories.findUnique({
+        where: { category_name },
+      });
+      return category;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     try {

@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class MerchantsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private categoryService: CategoriesService,
+  ) {}
   async create(createMerchantDto: CreateMerchantDto) {
     const { categories, tags, ...merchantData } = createMerchantDto;
+    console.log('Merchant', createMerchantDto);
 
     // const {
     //   firstName,
@@ -21,18 +26,57 @@ export class MerchantsService {
     //   email,
     // } = createMerchantDto;
     try {
+      // Create or find existing categories
+      const categoryPromises = categories.map(async (categoryName) => {
+        const existingCategory = await this.prismaService.categories.findUnique(
+          {
+            where: { category_name: categoryName },
+          },
+        );
+
+        if (existingCategory) {
+          return { id: existingCategory.id };
+        } else {
+          const createdCategory = await this.prismaService.categories.create({
+            data: {
+              category_name: categoryName,
+            },
+          });
+          return { id: createdCategory.id };
+        }
+      });
+
+      const resolvedCategories = await Promise.all(categoryPromises);
+
+      // Create or find existing tags
+      const tagPromises = tags.map(async (tagName) => {
+        const existingTag = await this.prismaService.tags.findUnique({
+          where: { tag_name: tagName },
+        });
+
+        if (existingTag) {
+          return { id: existingTag.id };
+        } else {
+          const createdTag = await this.prismaService.tags.create({
+            data: {
+              tag_name: tagName,
+            },
+          });
+          return { id: createdTag.id };
+        }
+      });
+
+      const resolvedTags = await Promise.all(tagPromises);
+
+      // Create merchant with basic information and connected categories and tags
       const newMerchant = await this.prismaService.merchants.create({
         data: {
           ...merchantData,
           categories: {
-            create: categories.map((categoryName) => ({
-              category_name: categoryName,
-            })),
+            connect: resolvedCategories,
           },
           tags: {
-            create: tags.map((tagName) => ({
-              tag_name: tagName,
-            })),
+            connect: resolvedTags,
           },
         },
         include: {
