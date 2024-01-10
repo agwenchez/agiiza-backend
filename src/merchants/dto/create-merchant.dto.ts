@@ -36,6 +36,14 @@ export class CreateMerchantDto {
   @IsString()
   phoneNumber: string;
 
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
   @IsOptional()
   //   @IsArray()
   categories: string[];

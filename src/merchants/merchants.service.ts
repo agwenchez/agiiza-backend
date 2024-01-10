@@ -100,10 +100,79 @@ export class MerchantsService {
   }
 
   async update(id: string, updateMerchantDto: UpdateMerchantDto) {
-    return `This action updates a #${id} merchant`;
-  }
+    const { categories, tags, ...updateMerchantData } = updateMerchantDto;
+    try {
+      // Create or find existing categories
+      const categoryPromises = categories.map(async (categoryName) => {
+        const existingCategory = await this.categoryService.findOne(
+          categoryName,
+        );
 
-  remove(id: string) {
-    return `This action removes a #${id} merchant`;
+        if (existingCategory) {
+          return { id: existingCategory.id };
+        } else {
+          const createCategoryDto = { category_name: categoryName };
+          const createdCategory = await this.categoryService.create(
+            createCategoryDto,
+          );
+          return { id: createdCategory.id };
+        }
+      });
+
+      const resolvedCategories = await Promise.all(categoryPromises);
+
+      // Create or find existing tags
+      const tagPromises = tags.map(async (tagName) => {
+        const existingTag = await this.prismaService.tag.findUnique({
+          where: { tag_name: tagName },
+        });
+
+        if (existingTag) {
+          return { id: existingTag.id };
+        } else {
+          const createdTag = await this.prismaService.tag.create({
+            data: {
+              tag_name: tagName,
+            },
+          });
+          return { id: createdTag.id };
+        }
+      });
+
+      const resolvedTags = await Promise.all(tagPromises);
+
+      // Create merchant with basic information and connected categories and tags
+      const updatedMerchant = await this.prismaService.merchant.update({
+        where: { id },
+        data: {
+          ...updateMerchantData,
+          categories: {
+            connect: resolvedCategories,
+          },
+          tags: {
+            connect: resolvedTags,
+          },
+        },
+        include: {
+          categories: true,
+          tags: true,
+        },
+      });
+      return updatedMerchant;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  }
+  async remove(id: string) {
+    try {
+      const deletedMerchant = await this.prismaService.merchant.delete({
+        where: { id },
+      });
+      return deletedMerchant;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
   }
 }

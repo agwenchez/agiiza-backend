@@ -18,6 +18,7 @@ model Merchant {
   lastName       String     @db.VarChar(100)
   storeName      String     @db.VarChar(200)
   storeAddress   String     @db.VarChar(200)
+  location       String     @db.VarChar(200)
   nearbyLandmark String     @db.VarChar(400)
   description    String     @db.VarChar(3000)
   email          String     @unique @db.VarChar(100)
