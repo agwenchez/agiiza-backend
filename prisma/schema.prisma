@@ -19,6 +19,7 @@ model Merchant {
   storeName      String     @db.VarChar(200)
   storeAddress   String     @db.VarChar(200)
   nearbyLandmark String     @db.VarChar(400)
+  description    String     @db.VarChar(3000)
   email          String     @unique @db.VarChar(100)
   phoneNumber    String     @unique @db.VarChar(20)
   categories     Category[]
@@ -49,18 +50,6 @@ model Tag {
 
   @@map("tags")
 }
-
-// model Products {
-//   id          String   @id @default(uuid())
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-//   productName String   @db.VarChar(100)
-//   productDescription String   @db.VarChar(3000)
-//   itemCategory String   @db.VarChar(100)
-//   productName String   @db.VarChar(100)
-
-//   @@map("products")
-// }
 
 model Product {
   id          String   @id @default(uuid())
