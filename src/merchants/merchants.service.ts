@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMerchantDto } from './dto/create-merchant.dto';
+import {
+  CreateMerchantDto,
+  CreateMerchantLocationDto,
+} from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CategoriesService } from 'src/categories/categories.service';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
+// import {prisma} from '../extendedPrismaClient';
 
 @Injectable()
 export class MerchantsService {
@@ -12,8 +16,16 @@ export class MerchantsService {
     private categoryService: CategoriesService,
   ) {}
   async create(createMerchantDto: CreateMerchantDto) {
-    const { categories, tags, ...merchantData } = createMerchantDto;
-    // console.log('Merchant', createMerchantDto);
+    const {
+      categories,
+      tags,
+      lat,
+      lng,
+      nearbyLandmarkLat,
+      nearbyLandmarkLng,
+      ...merchantData
+    } = createMerchantDto;
+    console.log('Merchant', createMerchantDto);
     try {
       // Create or find existing categories
       const categoryPromises = categories.map(async (categoryName) => {
@@ -70,6 +82,19 @@ export class MerchantsService {
           tags: true,
         },
       });
+      console.log('New merchant ID', newMerchant.id);
+      const merchantLocationBody = {
+        merchantId: newMerchant.id,
+        lat,
+        lng,
+      };
+      await this.createMerchantLocation(merchantLocationBody);
+      const merchantNearbyLandmarkBody = {
+        merchantId: newMerchant.id,
+        lat: nearbyLandmarkLat,
+        lng: nearbyLandmarkLng,
+      };
+      await this.createMerchanNearbyLandmark(merchantNearbyLandmarkBody);
       return newMerchant;
     } catch (error) {
       console.log('Error', error);
@@ -77,9 +102,54 @@ export class MerchantsService {
     }
   }
 
+  createMerchantLocation = async (
+    createMerchantLocationDto: CreateMerchantLocationDto,
+  ) => {
+    const { merchantId, lat, lng } = createMerchantLocationDto;
+    try {
+      const newMerchantLocation =
+        await this.prismaService.merchantLocation.create({
+          data: {
+            merchantId,
+            lat,
+            lng,
+          },
+        });
+
+      console.log('New merchant location', newMerchantLocation);
+      return newMerchantLocation;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  };
+  createMerchanNearbyLandmark = async (
+    createMerchantLocationDto: CreateMerchantLocationDto,
+  ) => {
+    const { merchantId, lat, lng } = createMerchantLocationDto;
+    try {
+      const newMerchantNearbyLandmark =
+        await this.prismaService.merchantNearbyLandmark.create({
+          data: {
+            merchantId,
+            lat,
+            lng,
+          },
+        });
+
+      console.log('New merchant nearbyLandmark', newMerchantNearbyLandmark);
+      return newMerchantNearbyLandmark;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  };
+
   async findAll() {
     try {
-      const merchants = await this.prismaService.merchant.findMany();
+      const merchants = await this.prismaService.merchant.findMany({
+        include: { categories: true, tags: true },
+      });
       return merchants;
     } catch (error) {
       console.log('Error', error);

@@ -1,33 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
 }
 
 model Merchant {
-  id             String     @id @default(uuid())
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  firstName      String     @db.VarChar(100)
-  lastName       String     @db.VarChar(100)
-  storeName      String     @db.VarChar(200)
-  storeAddress   String     @db.VarChar(200)
-  location       String     @db.VarChar(200)
-  nearbyLandmark String     @db.VarChar(400)
-  description    String     @db.VarChar(3000)
-  email          String     @unique @db.VarChar(100)
-  phoneNumber    String     @unique @db.VarChar(20)
-  categories     Category[]
-  tags           Tag[]
-  products       Product[]
+  id                     String                  @id @default(uuid())
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  firstName              String                  @db.VarChar(100)
+  lastName               String                  @db.VarChar(100)
+  storeName              String                  @db.VarChar(200)
+  email                  String                  @unique @db.VarChar(100)
+  phoneNumber            String                  @unique @db.VarChar(20)
+  storeAddress           String                  @db.VarChar(200)
+  description            String                  @db.VarChar(3000)
+  categories             Category[]
+  products               Product[]
+  tags                   Tag[]
+  location               MerchantLocation?
+  MerchantNearbyLandmark MerchantNearbyLandmark?
 
   @@map("merchants")
+}
+
+model MerchantLocation {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Merchant   Merchant @relation(fields: [merchantId], references: [id])
+  merchantId String   @unique
+  lng        String   @db.VarChar(100)
+  lat        String   @db.VarChar(100)
+}
+
+model MerchantNearbyLandmark {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Merchant   Merchant @relation(fields: [merchantId], references: [id])
+  merchantId String   @unique
+  lng        String   @db.VarChar(100)
+  lat        String   @db.VarChar(100)
 }
 
 model Category {
@@ -35,7 +54,7 @@ model Category {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   category_name String    @unique @db.VarChar(200)
-  merchant      Merchant? @relation(fields: [merchantId], references: [id])
+  Merchant      Merchant? @relation(fields: [merchantId], references: [id])
   merchantId    String?
 
   @@map("categories")
@@ -46,8 +65,8 @@ model Tag {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   tag_name   String    @unique @db.VarChar(200)
-  merchant   Merchant? @relation(fields: [merchantId], references: [id])
   merchantId String?
+  merchant   Merchant? @relation(fields: [merchantId], references: [id])
 
   @@map("tags")
 }
@@ -60,9 +79,9 @@ model Product {
   description String   @db.VarChar(255)
   category    String   @db.VarChar(100)
   unit        String   @db.VarChar(20)
+  merchantId  String
   prices      Price[]
   merchant    Merchant @relation(fields: [merchantId], references: [id])
-  merchantId  String
 
   @@map("products")
 }
@@ -77,4 +96,13 @@ model Price {
   product   Product  @relation(fields: [productId], references: [id])
 
   @@map("prices")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
 }

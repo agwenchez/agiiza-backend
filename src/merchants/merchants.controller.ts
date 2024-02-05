@@ -17,6 +17,7 @@ export class MerchantsController {
 
   @Post()
   create(@Body() createMerchantDto: CreateMerchantDto) {
+    // console.log("Body", createMerchantDto)
     return this.merchantsService.create(createMerchantDto);
   }
 
