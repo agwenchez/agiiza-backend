@@ -7,6 +7,7 @@ import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CategoriesService } from 'src/categories/categories.service';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
+import * as argon from 'argon2';
 // import {prisma} from '../extendedPrismaClient';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class MerchantsService {
     private categoryService: CategoriesService,
   ) {}
   async create(createMerchantDto: CreateMerchantDto) {
+    let hash = await argon.hash(createMerchantDto.password);
     const {
       categories,
       tags,
@@ -23,7 +25,15 @@ export class MerchantsService {
       lng,
       nearbyLandmarkLat,
       nearbyLandmarkLng,
-      ...merchantData
+      firstName,
+      lastName,
+      storeName,
+      storeAddress,
+      email,
+      password,
+      phoneNumber,
+      description,
+      role,
     } = createMerchantDto;
     console.log('Merchant', createMerchantDto);
     try {
@@ -69,7 +79,15 @@ export class MerchantsService {
       // Create merchant with basic information and connected categories and tags
       const newMerchant = await this.prismaService.merchant.create({
         data: {
-          ...merchantData,
+          firstName,
+          lastName,
+          storeName,
+          storeAddress,
+          email,
+          password : hash,
+          phoneNumber,
+          description,
+          role,
           categories: {
             connect: resolvedCategories,
           },
@@ -82,7 +100,7 @@ export class MerchantsService {
           tags: true,
         },
       });
-      console.log('New merchant ID', newMerchant.id);
+      // console.log('New merchant ID', newMerchant.id);
       const merchantLocationBody = {
         merchantId: newMerchant.id,
         lat,
@@ -116,7 +134,7 @@ export class MerchantsService {
           },
         });
 
-      console.log('New merchant location', newMerchantLocation);
+      // console.log('New merchant location', newMerchantLocation);
       return newMerchantLocation;
     } catch (error) {
       console.log('Error', error);
@@ -137,7 +155,7 @@ export class MerchantsService {
           },
         });
 
-      console.log('New merchant nearbyLandmark', newMerchantNearbyLandmark);
+      // console.log('New merchant nearbyLandmark', newMerchantNearbyLandmark);
       return newMerchantNearbyLandmark;
     } catch (error) {
       console.log('Error', error);

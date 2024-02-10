@@ -18,8 +18,10 @@ model Merchant {
   storeName              String                  @db.VarChar(200)
   email                  String                  @unique @db.VarChar(100)
   phoneNumber            String                  @unique @db.VarChar(20)
+  password               String                  @db.VarChar(100)
   storeAddress           String                  @db.VarChar(200)
   description            String                  @db.VarChar(3000)
+  role                   String                  @db.VarChar(50)
   categories             Category[]
   products               Product[]
   tags                   Tag[]
@@ -37,6 +39,8 @@ model MerchantLocation {
   merchantId String   @unique
   lng        String   @db.VarChar(100)
   lat        String   @db.VarChar(100)
+
+  @@map("merchant_locations")
 }
 
 model MerchantNearbyLandmark {
@@ -47,6 +51,8 @@ model MerchantNearbyLandmark {
   merchantId String   @unique
   lng        String   @db.VarChar(100)
   lat        String   @db.VarChar(100)
+
+  @@map("merchant_nearby_landmarks")
 }
 
 model Category {
