@@ -13,9 +13,9 @@ export class CreateProductDto {
   @IsString()
   category: string;
 
-  @IsNotEmpty()
-  @IsString()
-  unit: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // unit: string;
 
   @IsNotEmpty()
   @IsString()
@@ -32,6 +32,6 @@ export class CreatePriceDto {
   unit: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  value: number;
+  @IsString()
+  value: string;
 }

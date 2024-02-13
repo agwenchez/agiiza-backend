@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
   CreateMerchantDto,
   CreateMerchantLocationDto,
+  MerchantLoginDto,
 } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CategoriesService } from 'src/categories/categories.service';
 import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
 import * as argon from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 // import {prisma} from '../extendedPrismaClient';
 
 @Injectable()
@@ -15,6 +18,8 @@ export class MerchantsService {
   constructor(
     private readonly prismaService: PrismaService,
     private categoryService: CategoriesService,
+    private jwt: JwtService,
+    private configService: ConfigService,
   ) {}
   async create(createMerchantDto: CreateMerchantDto) {
     let hash = await argon.hash(createMerchantDto.password);
@@ -35,7 +40,7 @@ export class MerchantsService {
       description,
       role,
     } = createMerchantDto;
-    console.log('Merchant', createMerchantDto);
+    // console.log('Merchant', createMerchantDto);
     try {
       // Create or find existing categories
       const categoryPromises = categories.map(async (categoryName) => {
@@ -84,7 +89,7 @@ export class MerchantsService {
           storeName,
           storeAddress,
           email,
-          password : hash,
+          password: hash,
           phoneNumber,
           description,
           role,
@@ -100,20 +105,66 @@ export class MerchantsService {
           tags: true,
         },
       });
+
+      const { id } = newMerchant;
       // console.log('New merchant ID', newMerchant.id);
       const merchantLocationBody = {
-        merchantId: newMerchant.id,
+        merchantId: id,
         lat,
         lng,
       };
       await this.createMerchantLocation(merchantLocationBody);
       const merchantNearbyLandmarkBody = {
-        merchantId: newMerchant.id,
+        merchantId: id,
         lat: nearbyLandmarkLat,
         lng: nearbyLandmarkLng,
       };
       await this.createMerchanNearbyLandmark(merchantNearbyLandmarkBody);
-      return newMerchant;
+      const access_token = await this.signToken(id, email);
+      delete newMerchant.password;
+      return { merchant: { ...newMerchant }, ...access_token };
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  }
+
+  async signToken(
+    userId: string,
+    email: string,
+  ): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      email,
+    };
+    const access_token = await this.jwt.signAsync(payload, {
+      expiresIn: '1d',
+      secret: this.configService.get('JWT_SECRET'),
+    });
+    console.log('Access token', access_token);
+    return { access_token };
+  }
+
+  async merchantLogin(merchantLogin: MerchantLoginDto) {
+    const { email, password } = merchantLogin;
+    try {
+      const merchant = await this.prismaService.merchant.findUnique({
+        where: {
+          email,
+        },
+      });
+      if (!merchant) {
+        throw new ForbiddenException('Merchant with email does not exist');
+      }
+
+      // compare the password
+      const passwordMatches = await argon.verify(merchant.password, password);
+      if (!passwordMatches) {
+        throw new ForbiddenException('Password is incorrect');
+      }
+      const access_token = await this.signToken(merchant.id, email);
+      delete merchant.password;
+      return { merchant: { ...merchant }, ...access_token };
     } catch (error) {
       console.log('Error', error);
       throw error;

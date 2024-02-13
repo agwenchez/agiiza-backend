@@ -9,6 +9,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     const { prices, merchantId, ...productData } = createProductDto;
+    console.log('Product', createProductDto);
     try {
       // Create product with basic information
       const createdProduct = await this.prismaService.product.create({
@@ -43,6 +44,21 @@ export class ProductsService {
         },
       });
       return products;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  }
+
+  async findProductsByMerchant(merchantId: string) {
+    try {
+      const merchantProducts = await this.prismaService.product.findMany({
+        where: { merchantId },
+        include: {
+          prices: true,
+        },
+      });
+      return merchantProducts;
     } catch (error) {
       console.log('Error', error);
       throw error;

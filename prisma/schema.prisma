@@ -84,7 +84,7 @@ model Product {
   name        String   @db.VarChar(255)
   description String   @db.VarChar(255)
   category    String   @db.VarChar(100)
-  unit        String   @db.VarChar(20)
+  // unit        String   @db.VarChar(20)
   merchantId  String
   prices      Price[]
   merchant    Merchant @relation(fields: [merchantId], references: [id])
@@ -96,7 +96,7 @@ model Price {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  value     Float
+  value     String   @db.VarChar(20)
   unit      String   @db.VarChar(20)
   productId String
   product   Product  @relation(fields: [productId], references: [id])

@@ -48,8 +48,8 @@ export class CreateMerchantDto {
 
   @IsNotEmpty()
   @IsString()
-  lng:string;
-  
+  lng: string;
+
   @IsNotEmpty()
   @IsString()
   lat: string;
@@ -61,7 +61,7 @@ export class CreateMerchantDto {
   @IsNotEmpty()
   @IsString()
   nearbyLandmarkLng: string;
-  
+
   @IsNotEmpty()
   @IsString()
   nearbyLandmarkLat: string;
@@ -70,7 +70,7 @@ export class CreateMerchantDto {
 export class CreateMerchantLocationDto {
   @IsNotEmpty()
   @IsString()
-  merchantId : string;
+  merchantId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -79,4 +79,14 @@ export class CreateMerchantLocationDto {
   @IsNotEmpty()
   @IsString()
   lat: string;
+}
+
+export class MerchantLoginDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }

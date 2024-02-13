@@ -6,10 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from 'src/multerConfig';
+import { Express, Request, Response } from 'express';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -28,6 +34,19 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
+  }
+
+  // @Post('upload-single')
+  // @UseInterceptors(FileInterceptor('file', multerConfig))
+  // async uploadFile(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Req() req: Request,
+  // ) {
+  // }
+
+  @Get('/merchant/:id')
+  findProductsByMerchant(@Param('id') id: string) {
+    return this.productsService.findProductsByMerchant(id);
   }
 
   @Patch(':id')

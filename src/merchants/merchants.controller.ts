@@ -8,17 +8,24 @@ import {
   Delete,
 } from '@nestjs/common';
 import { MerchantsService } from './merchants.service';
-import { CreateMerchantDto } from './dto/create-merchant.dto';
+import { CreateMerchantDto, MerchantLoginDto } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
+import { Public } from 'src/auth/decorator';
 
 @Controller('api/v1/merchants')
 export class MerchantsController {
   constructor(private readonly merchantsService: MerchantsService) {}
 
+  @Public()
   @Post()
   create(@Body() createMerchantDto: CreateMerchantDto) {
     // console.log("Body", createMerchantDto)
     return this.merchantsService.create(createMerchantDto);
+  }
+  @Public()
+  @Post('login')
+  merchantLogin(@Body() merchantData: MerchantLoginDto) {
+    return this.merchantsService.merchantLogin(merchantData);
   }
 
   @Get()

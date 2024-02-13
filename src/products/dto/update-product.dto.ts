@@ -30,6 +30,6 @@ export class CreatePriceDto {
   id: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  value: number;
+  @IsString()
+  value: string;
 }
