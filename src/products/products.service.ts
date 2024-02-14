@@ -7,14 +7,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ProductsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
     const { prices, merchantId, ...productData } = createProductDto;
     console.log('Product', createProductDto);
+    console.log('File', file);
+    console.log('Prices', prices);
+
+    const data = { image: file.filename, ...productData };
     try {
       // Create product with basic information
       const createdProduct = await this.prismaService.product.create({
         data: {
-          ...productData,
+          ...data,
           merchant: {
             connect: { id: merchantId },
           },
@@ -28,7 +32,6 @@ export class ProductsService {
           prices: true,
         },
       });
-
       return createdProduct;
     } catch (error) {
       console.log('Error', error);
@@ -59,6 +62,15 @@ export class ProductsService {
         },
       });
       return merchantProducts;
+    } catch (error) {
+      console.log('Error', error);
+      throw error;
+    }
+  }
+
+  async uploadFile(file: Express.Multer.File) {
+    try {
+      console.log('File uploaded', file);
     } catch (error) {
       console.log('Error', error);
       throw error;

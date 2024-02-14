@@ -16,14 +16,17 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/multerConfig';
 import { Express, Request, Response } from 'express';
+import { Public } from 'src/auth/decorator';
 
 @Controller('api/v1/products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Public()
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  create(@Body() createProductDto: CreateProductDto,  @UploadedFile() file: Express.Multer.File,) {
+    return this.productsService.create(createProductDto, file);
   }
 
   @Get()
@@ -36,13 +39,14 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  // @Post('upload-single')
-  // @UseInterceptors(FileInterceptor('file', multerConfig))
-  // async uploadFile(
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @Req() req: Request,
-  // ) {
-  // }
+  @Public()
+  @Post('upload-single')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.productsService.uploadFile(file)
+  }
 
   @Get('/merchant/:id')
   findProductsByMerchant(@Param('id') id: string) {

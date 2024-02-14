@@ -84,7 +84,7 @@ model Product {
   name        String   @db.VarChar(255)
   description String   @db.VarChar(255)
   category    String   @db.VarChar(100)
-  // unit        String   @db.VarChar(20)
+  image       String   @db.VarChar(200)
   merchantId  String
   prices      Price[]
   merchant    Merchant @relation(fields: [merchantId], references: [id])

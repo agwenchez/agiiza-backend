@@ -15,7 +15,7 @@ export class CreateProductDto {
 
   // @IsNotEmpty()
   // @IsString()
-  // unit: string;
+  // image: string;
 
   @IsNotEmpty()
   @IsString()
