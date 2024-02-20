@@ -86,7 +86,7 @@ model Product {
   category    String   @db.VarChar(100)
   image       String   @db.VarChar(200)
   merchantId  String
-  prices      Price[]
+  prices      Price[]  
   merchant    Merchant @relation(fields: [merchantId], references: [id])
 
   @@map("products")

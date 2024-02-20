@@ -141,7 +141,6 @@ export class MerchantsService {
       expiresIn: '1d',
       secret: this.configService.get('JWT_SECRET'),
     });
-    console.log('Access token', access_token);
     return { access_token };
   }
 

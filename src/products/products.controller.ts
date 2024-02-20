@@ -39,14 +39,14 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  @Public()
-  @Post('upload-single')
-  @UseInterceptors(FileInterceptor('file', multerConfig))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return this.productsService.uploadFile(file)
-  }
+  // @Public()
+  // @Post('upload-single')
+  // @UseInterceptors(FileInterceptor('file', multerConfig))
+  // async uploadFile(
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   return this.productsService.uploadFile(file)
+  // }
 
   @Get('/merchant/:id')
   findProductsByMerchant(@Param('id') id: string) {

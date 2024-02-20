@@ -68,14 +68,14 @@ export class ProductsService {
     }
   }
 
-  async uploadFile(file: Express.Multer.File) {
-    try {
-      console.log('File uploaded', file);
-    } catch (error) {
-      console.log('Error', error);
-      throw error;
-    }
-  }
+  // async uploadFile(file: Express.Multer.File) {
+  //   try {
+  //     console.log('File uploaded', file);
+  //   } catch (error) {
+  //     console.log('Error', error);
+  //     throw error;
+  //   }
+  // }
 
   async findOne(productId: string) {
     try {
@@ -133,12 +133,26 @@ export class ProductsService {
   }
 
   async remove(id: string) {
+    console.log("ID", id)
     try {
-      const deletedProduct = await this.prismaService.product.delete({
-        where: {
-          id,
-        },
-      });
+      const product = await this.findOne(id)
+      console.log("Product found", product)
+      if(!product){
+        throw new NotFoundException('Product not found');
+      }
+      // const deletedProduct = await this.prismaService.product.delete({
+      //   where: {
+      //     id,
+      //   },
+      // });
+      const deletedProduct = await this.prismaService.$transaction([
+        this.prismaService.price.deleteMany({
+          where: { productId: id },
+        }),
+        this.prismaService.product.delete({
+          where: { id },
+        }),
+      ]);
       return deletedProduct;
     } catch (error) {
       console.log('Error', error);
