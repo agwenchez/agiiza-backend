@@ -22,6 +22,10 @@ export class CreateProductDto {
   merchantId: string;
 
   @IsNotEmpty()
+  @IsString()
+  deliveryTime: string;
+
+  @IsNotEmpty()
   @IsArray()
   prices: CreatePriceDto[];
 }

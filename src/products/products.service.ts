@@ -10,8 +10,8 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
     const { prices, merchantId, ...productData } = createProductDto;
     console.log('Product', createProductDto);
-    console.log('File', file);
-    console.log('Prices', prices);
+    // console.log('File', file);
+    // console.log('Prices', prices);
 
     const data = { image: file.filename, ...productData };
     try {
