@@ -10,7 +10,7 @@ export class CategoriesService {
     try {
       const newCategory = await this.prismaService.category.create({
         data: {
-          category_name: createCategoryDto.category_name,
+          categoryName: createCategoryDto.categoryName,
         },
       });
       return newCategory;
@@ -30,10 +30,10 @@ export class CategoriesService {
     }
   }
 
-  async findOne(category_name: string) {
+  async findOne(categoryName: string) {
     try {
       const category = await this.prismaService.category.findUnique({
-        where: { category_name },
+        where: { categoryName },
       });
       return category;
     } catch (error) {
@@ -46,7 +46,7 @@ export class CategoriesService {
     try {
       const updateCategory = await this.prismaService.category.update({
         where: { id },
-        data: { category_name: updateCategoryDto.category_name },
+        data: { categoryName: updateCategoryDto.categoryName },
       });
       return updateCategory;
     } catch (error) {

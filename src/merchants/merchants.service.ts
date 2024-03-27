@@ -51,7 +51,7 @@ export class MerchantsService {
         if (existingCategory) {
           return { id: existingCategory.id };
         } else {
-          const createCategoryDto = { category_name: categoryName };
+          const createCategoryDto = { categoryName: categoryName };
           const createdCategory = await this.categoryService.create(
             createCategoryDto,
           );
@@ -64,7 +64,7 @@ export class MerchantsService {
       // Create or find existing tags
       const tagPromises = tags.map(async (tagName) => {
         const existingTag = await this.prismaService.tag.findUnique({
-          where: { tag_name: tagName },
+          where: { tagName: tagName },
         });
 
         if (existingTag) {
@@ -72,7 +72,7 @@ export class MerchantsService {
         } else {
           const createdTag = await this.prismaService.tag.create({
             data: {
-              tag_name: tagName,
+              tagName: tagName,
             },
           });
           return { id: createdTag.id };
@@ -249,7 +249,7 @@ export class MerchantsService {
         if (existingCategory) {
           return { id: existingCategory.id };
         } else {
-          const createCategoryDto = { category_name: categoryName };
+          const createCategoryDto = { categoryName: categoryName };
           const createdCategory = await this.categoryService.create(
             createCategoryDto,
           );
@@ -262,7 +262,7 @@ export class MerchantsService {
       // Create or find existing tags
       const tagPromises = tags.map(async (tagName) => {
         const existingTag = await this.prismaService.tag.findUnique({
-          where: { tag_name: tagName },
+          where: { tagName: tagName },
         });
 
         if (existingTag) {
@@ -270,7 +270,7 @@ export class MerchantsService {
         } else {
           const createdTag = await this.prismaService.tag.create({
             data: {
-              tag_name: tagName,
+              tagName: tagName,
             },
           });
           return { id: createdTag.id };
