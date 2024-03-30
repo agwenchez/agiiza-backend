@@ -1,15 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
-@Controller('orders')
+@Controller('api/v1/orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
+  }
+  @Post('/payment')
+  async makePayment(@Body() body: CreateOrderDto): Promise<any> {
+    try {
+      const response = await this.ordersService.makePayment(body);
+      return response;
+    } catch (error) {
+      console.error('Error initiating STK push:', error);
+      throw error;
+    }
   }
 
   @Get()

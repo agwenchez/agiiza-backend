@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { getTimestamp } from 'utils';
-
+import axios from 'axios';
 @Injectable()
 export class OrdersService {
   create(createOrderDto: CreateOrderDto) {
@@ -11,13 +11,13 @@ export class OrdersService {
 
   async makePayment(body: CreateOrderDto): Promise<any> {
     try {
-      const { amount, phoneNumber, Order_ID } = body;
+      const { amount, phoneNumber, orderId } = body;
       const url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
       const auth = `Bearer ${process.env.SAFARICOM_ACCESS_TOKEN}`;
 
       const timestamp = getTimestamp();
       const password = Buffer.from(process.env.BUSINESS_SHORT_CODE + process.env.PASS_KEY + timestamp).toString('base64');
-      const callback_url = `${process.env.BASE_URL}/api/stkPushCallback/${Order_ID}`;
+      const callback_url = `${process.env.BASE_URL}/api/stkPushCallback/${orderId}`;
 
       const options = {
         url,
@@ -31,9 +31,9 @@ export class OrdersService {
           Timestamp: timestamp,
           TransactionType: 'CustomerPayBillOnline',
           Amount: amount,
-          PartyA: phone,
+          PartyA: phoneNumber,
           PartyB: process.env.BUSINESS_SHORT_CODE,
-          PhoneNumber: phone,
+          PhoneNumber: phoneNumber,
           CallBackURL: callback_url,
           AccountReference: 'Wamaitha Online Shop',
           TransactionDesc: 'Paid online',
@@ -41,8 +41,18 @@ export class OrdersService {
         json: true,
       };
 
-      const response = await request(options);
-      return response;
+      // const response = await this.httpService.post(url, requestBody, {
+      //   headers: {
+      //     Authorization: auth,
+      //   },
+      // }).toPromise();
+      const response = await axios.post(url, body, {
+        headers:{
+          
+        }
+      })
+
+      return response.data;
     } catch (error) {
       console.error('Error initiating STK push:', error);
       throw error;
