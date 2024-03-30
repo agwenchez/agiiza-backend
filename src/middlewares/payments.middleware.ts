@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class ApiMiddleware implements NestMiddleware {
+export class PaymentMiddleware implements NestMiddleware {
   constructor(private readonly configService: ConfigService) {}
   async use(req: Request, res: Response, next: NextFunction) {
     try {
@@ -29,6 +29,7 @@ export class ApiMiddleware implements NestMiddleware {
 
       // Forward the response from the API call to the next middleware or route handler
       res.locals.apiResponse = response.data;
+      console.log("Response", response.data)
       next();
     } catch (error) {
       // Handle errors if any

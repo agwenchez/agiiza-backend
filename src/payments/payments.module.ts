@@ -1,7 +1,7 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
-import { ApiMiddleware } from 'src/middlewares/payments.middleware';
+import { PaymentMiddleware } from 'src/middlewares/payments.middleware';
 
 
 @Module({
@@ -10,6 +10,6 @@ import { ApiMiddleware } from 'src/middlewares/payments.middleware';
 })
 export class PaymentsModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiMiddleware).forRoutes(PaymentsController);
+    consumer.apply(PaymentMiddleware).forRoutes({ path: 'api/v1/payments', method: RequestMethod.POST});
   }
 }
