@@ -19,16 +19,16 @@ export class OrdersController {
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
-  @Post('/payment')
-  async makePayment(@Body() body: CreateOrderDto): Promise<any> {
-    try {
-      const response = await this.ordersService.makePayment(body);
-      return response;
-    } catch (error) {
-      console.error('Error initiating STK push:', error);
-      throw error;
-    }
-  }
+  // @Post('/payment')
+  // async makePayment(@Body() body: CreateOrderDto): Promise<any> {
+  //   try {
+  //     const response = await this.ordersService.makePayment(body);
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error initiating STK push:', error);
+  //     throw error;
+  //   }
+  // }
 
   @Get()
   findAll() {
