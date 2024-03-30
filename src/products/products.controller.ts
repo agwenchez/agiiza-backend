@@ -54,8 +54,10 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @UploadedFile() file: Express.Multer.File,) {
+    console.log("product", updateProductDto)
+    return this.productsService.update(id, updateProductDto, file);
   }
 
   @Delete(':id')

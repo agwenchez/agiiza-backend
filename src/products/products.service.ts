@@ -7,32 +7,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ProductsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
-    const { prices, merchantId, ...productData } = createProductDto;
-    console.log('Product', createProductDto);
-    // console.log('File', file);
-    // console.log('Prices', prices);
-
-    const data = { image: file.filename, ...productData };
+  async findOne(productId: string) {
     try {
-      // Create product with basic information
-      const createdProduct = await this.prismaService.product.create({
-        data: {
-          ...data,
-          merchant: {
-            connect: { id: merchantId },
-          },
-          prices: {
-            create: prices.map((price) => ({
-              ...price,
-            })),
-          },
-        },
+      const product = await this.prismaService.product.findUnique({
+        where: { id: productId },
         include: {
           prices: true,
         },
       });
-      return createdProduct;
+
+      if (!product) {
+        throw new NotFoundException(`Product with ID ${productId} not found`);
+      }
+
+      return product;
     } catch (error) {
       console.log('Error', error);
       throw error;
@@ -68,56 +56,67 @@ export class ProductsService {
     }
   }
 
-  // async uploadFile(file: Express.Multer.File) {
-  //   try {
-  //     console.log('File uploaded', file);
-  //   } catch (error) {
-  //     console.log('Error', error);
-  //     throw error;
-  //   }
-  // }
+  async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
+    const { prices, merchantId, ...productData } = createProductDto;
+    console.log('Product', createProductDto);
+    // console.log('File', file);
+    // console.log('Prices', prices);
 
-  async findOne(productId: string) {
+    const data = { image: file.filename, ...productData };
     try {
-      const product = await this.prismaService.product.findUnique({
-        where: { id: productId },
+      // Create product with basic information
+      const createdProduct = await this.prismaService.product.create({
+        data: {
+          ...data,
+          merchant: {
+            connect: { id: merchantId },
+          },
+          prices: {
+            create: prices.map((price) => ({
+              ...price,
+            })),
+          },
+        },
         include: {
           prices: true,
         },
       });
-
-      if (!product) {
-        throw new NotFoundException(`Product with ID ${productId} not found`);
-      }
-
-      return product;
+      return createdProduct;
     } catch (error) {
       console.log('Error', error);
       throw error;
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+    file: Express.Multer.File,
+  ) {
     const { prices, ...updatedProductData } = updateProductDto;
     try {
+      const data = { image: file.filename, ...updatedProductData };
+      console.log('data', data);
       const updatedProduct = await this.prismaService.product.update({
         where: {
           id,
         },
-        data: updatedProductData,
-        include: {
-          prices: true,
-        },
+        data,
+        // include: {
+        //   prices: true,
+        // },
       });
 
       // Update product's prices
       if (prices && prices.length > 0) {
         const updatePricePromises = prices.map(async (price) => {
-          if (price.id) {
+          const { id, unit, value } = price;
+          if (id) {
             return this.prismaService.price.update({
-              where: { id: price.id },
+              where: { id },
               data: {
-                value: price.value,
+                value: value,
+                unit: unit,
               },
             });
           }
@@ -132,12 +131,21 @@ export class ProductsService {
     }
   }
 
+  // async uploadFile(file: Express.Multer.File) {
+  //   try {
+  //     console.log('File uploaded', file);
+  //   } catch (error) {
+  //     console.log('Error', error);
+  //     throw error;
+  //   }
+  // }
+
   async remove(id: string) {
-    console.log("ID", id)
+    // console.log("ID", id)
     try {
-      const product = await this.findOne(id)
-      console.log("Product found", product)
-      if(!product){
+      const product = await this.findOne(id);
+      console.log('Product found', product);
+      if (!product) {
         throw new NotFoundException('Product not found');
       }
       // const deletedProduct = await this.prismaService.product.delete({
