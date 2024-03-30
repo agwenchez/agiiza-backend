@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import axios from 'axios';
-import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
+// import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { getTimestamp } from 'utils';
 
 @Injectable()
