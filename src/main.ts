@@ -7,7 +7,7 @@ import * as express from 'express';
 import * as path from 'path';
 
 async function configureStaticFiles(app) {
-  app.use('/static', express.static(path.join(__dirname, '../..', 'public')));
+  app.use('/static', express.static(path.join(__dirname, '../..', 'public/uploads')));
 }
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

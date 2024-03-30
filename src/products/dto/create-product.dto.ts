@@ -13,13 +13,17 @@ export class CreateProductDto {
   @IsString()
   category: string;
 
-  @IsNotEmpty()
-  @IsString()
-  unit: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // image: string;
 
   @IsNotEmpty()
   @IsString()
   merchantId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  deliveryTime: string;
 
   @IsNotEmpty()
   @IsArray()
@@ -32,6 +36,6 @@ export class CreatePriceDto {
   unit: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  value: number;
+  @IsString()
+  value: string;
 }

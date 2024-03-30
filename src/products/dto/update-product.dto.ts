@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+// import { PartialType } from '@nestjs/mapped-types';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+// import { CreateProductDto } from './create-product.dto';
 
 export class UpdateProductDto {
   @IsNotEmpty()
@@ -21,15 +23,21 @@ export class UpdateProductDto {
   @IsString()
   merchantId: string;
 
-  prices: CreatePriceDto[];
+  @IsNotEmpty()
+  @IsArray()
+  prices: UpdatePriceDto[];
 }
 
-export class CreatePriceDto {
+export class UpdatePriceDto {
   @IsNotEmpty()
   @IsString()
   id: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  value: number;
+  @IsString()
+  value: string;
+  
+  @IsNotEmpty()
+  @IsString()
+  unit: string;
 }

@@ -18,7 +18,7 @@ CREATE TABLE "categories" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "category_name" VARCHAR(200) NOT NULL,
+    "categoryName" VARCHAR(200) NOT NULL,
     "merchantId" TEXT,
 
     CONSTRAINT "categories_pkey" PRIMARY KEY ("id")
@@ -29,7 +29,7 @@ CREATE TABLE "tags" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "tag_name" VARCHAR(200) NOT NULL,
+    "tagName" VARCHAR(200) NOT NULL,
     "merchantId" TEXT,
 
     CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
@@ -42,10 +42,10 @@ CREATE UNIQUE INDEX "merchants_email_key" ON "merchants"("email");
 CREATE UNIQUE INDEX "merchants_phoneNumber_key" ON "merchants"("phoneNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "categories_category_name_key" ON "categories"("category_name");
+CREATE UNIQUE INDEX "categories_categoryName_key" ON "categories"("categoryName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "tags_tag_name_key" ON "tags"("tag_name");
+CREATE UNIQUE INDEX "tags_tagName_key" ON "tags"("tagName");
 
 -- AddForeignKey
 ALTER TABLE "categories" ADD CONSTRAINT "categories_merchantId_fkey" FOREIGN KEY ("merchantId") REFERENCES "merchants"("id") ON DELETE SET NULL ON UPDATE CASCADE;

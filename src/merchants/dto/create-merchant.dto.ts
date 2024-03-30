@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-
 export class CreateMerchantDto {
   @IsNotEmpty()
   @IsString()
@@ -24,23 +23,70 @@ export class CreateMerchantDto {
   storeAddress: string;
 
   @IsNotEmpty()
-  @IsString()
-  nearbyLandmark: string;
-
-  @IsNotEmpty()
-  @IsString()
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
   @IsString()
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
   phoneNumber: string;
 
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
   @IsOptional()
-  //   @IsArray()
+  @IsArray()
   categories: string[];
 
   @IsOptional()
-  //   @IsArray()
+  @IsArray()
   tags: string[];
+
+  @IsNotEmpty()
+  @IsString()
+  lng: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lat: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+
+  @IsNotEmpty()
+  @IsString()
+  nearbyLandmarkLng: string;
+
+  @IsNotEmpty()
+  @IsString()
+  nearbyLandmarkLat: string;
+}
+
+export class CreateMerchantLocationDto {
+  @IsNotEmpty()
+  @IsString()
+  merchantId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lng: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lat: string;
+}
+
+export class MerchantLoginDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }
