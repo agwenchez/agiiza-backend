@@ -13,3 +13,22 @@ export class CreatePaymentDto {
 //   @IsString()
 //   orderId: string;
 }
+
+
+export class StkCallbackDto {
+    Body: {
+      stkCallback: {
+        MerchantRequestID: string;
+        CheckoutRequestID: string;
+        ResultCode: number;
+        ResultDesc: string;
+        CallbackMetadata: {
+          Item: {
+            Name: string;
+            Value: string;
+          }[];
+        };
+      };
+    };
+  }
+  

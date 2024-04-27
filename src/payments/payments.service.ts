@@ -4,63 +4,16 @@ import { UpdatePaymentDto } from './dto/update-payment.dto';
 import axios from 'axios';
 // import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { getTimestamp } from 'utils';
+import ngrok from 'ngrok'
+// import { Request } from 'express';
+import { CustomRequest } from 'src/@types';
 
 @Injectable()
 export class PaymentsService {
+  configService: any;
   // create(createPaymentDto: CreatePaymentDto) {
   //   return 'This action adds a new payment';
   // }
-
-  async makePayment(body: CreatePaymentDto): Promise<any> {
-    try {
-      const { amount, phoneNumber } = body;
-      const url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
-      const auth = `Bearer ${process.env.SAFARICOM_ACCESS_TOKEN}`;
-
-      const timestamp = getTimestamp();
-      const password = Buffer.from(process.env.BUSINESS_SHORT_CODE + process.env.PASS_KEY + timestamp).toString('base64');
-      const callback_url = `${process.env.BASE_URL}/api/stkPushCallback/`;
-
-      const options = {
-        url,
-        method: 'POST',
-        headers: {
-          Authorization: auth,
-        },
-        body: {
-          BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
-          Password: password,
-          Timestamp: timestamp,
-          TransactionType: 'CustomerPayBillOnline',
-          Amount: amount,
-          PartyA: phoneNumber,
-          PartyB: process.env.BUSINESS_SHORT_CODE,
-          PhoneNumber: phoneNumber,
-          CallBackURL: callback_url,
-          AccountReference: 'Wamaitha Online Shop',
-          TransactionDesc: 'Paid online',
-        },
-        json: true,
-      };
-
-      // const response = await this.httpService.post(url, requestBody, {
-      //   headers: {
-      //     Authorization: auth,
-      //   },
-      // }).toPromise();
-      const response = await axios.post(url, body, {
-        headers:{
-          
-        }
-      })
-
-      return response.data;
-    } catch (error) {
-      console.error('Error initiating STK push:', error);
-      throw error;
-    }
-  }
-
   findAll() {
     return `This action returns all payments`;
   }
@@ -75,5 +28,71 @@ export class PaymentsService {
 
   remove(id: number) {
     return `This action removes a #${id} payment`;
+  }
+
+  async generateAccessToken() {
+    try {
+      const url =
+        'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+      const auth = Buffer.from(
+        `${process.env.SAFARICOM_CONSUMER_KEY}:${process.env.SAFARICOM_CONSUMER_SECRET}`,
+      ).toString('base64');
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
+      });
+
+      // console.log('MPESA TOKEN', response.data.access_token);
+      return response.data.access_token
+    } catch (error) {
+      console.log('Error', error);
+    }
+  }
+  async makePayment(body: CreatePaymentDto): Promise<any> {
+    const access_token = await this.generateAccessToken()
+    // console.log('Access token', access_token);
+    try {
+      const { amount, phoneNumber } = body;
+      const url =
+        'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+      const auth = `Bearer ${access_token}`;
+
+      const timestamp = getTimestamp();
+      const password = Buffer.from(
+        process.env.BUSINESS_SHORT_CODE + process.env.PASS_KEY + timestamp,
+      ).toString('base64');
+      // const callback_url = `${process.env.BASE_URL}/api/stkPushCallback/`;
+         // create callback url
+         const callback_url = 'https://3348-102-220-12-50.ngrok-free.app'
+        //  const api = ngrok.getApi();
+        //  await api.listTunnels();
+         console.log("Callback", callback_url);
+
+      const data = {
+        BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: 'CustomerPayBillOnline',
+        Amount: amount,
+        PartyA: phoneNumber,
+        PartyB: process.env.BUSINESS_SHORT_CODE,
+        PhoneNumber: phoneNumber,
+        CallBackURL: `${callback_url}/payments/callback`,
+        AccountReference: 'Agiiza',
+        TransactionDesc: 'Pay your order by lipa na mpesa',
+      };
+      const response = await axios.post(url, data, {
+        headers: {
+          Authorization: auth,
+        },
+      });
+      console.log('Api response', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error initiating STK push:', error);
+      throw error;
+    }
   }
 }

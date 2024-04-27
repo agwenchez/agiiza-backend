@@ -29,11 +29,13 @@ export class ProductsController {
     return this.productsService.create(createProductDto, file);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.productsService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
@@ -48,6 +50,7 @@ export class ProductsController {
   //   return this.productsService.uploadFile(file)
   // }
 
+  @Public()
   @Get('/merchant/:id')
   findProductsByMerchant(@Param('id') id: string) {
     return this.productsService.findProductsByMerchant(id);
@@ -59,7 +62,7 @@ export class ProductsController {
     console.log("product", updateProductDto)
     return this.productsService.update(id, updateProductDto, file);
   }
-
+  
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
