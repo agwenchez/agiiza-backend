@@ -4,38 +4,40 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
+import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { CustomRequest } from 'src/@types';
+
 
 @Injectable()
-export class PaymentMiddleware implements NestMiddleware {
+export class AccessTokenMiddleware implements NestMiddleware {
   constructor(private readonly configService: ConfigService) {}
-  async use(req: Request, res: Response, next: NextFunction) {
-    try {
-      const auth = Buffer.from(
-        `${this.configService.get('SAF_CONSUMER_KEY')}:${this.configService.get(
-          'SAF_CONSUMER_SECRET',
-        )}`,
-      ).toString('base64');
-      const response = await axios.get(
-        'https://sandbox.safaricom.co.ke/oauth/v1/generate',
-        {
-          headers: {
-            Authorization: 'Basic ' + auth,
-          },
-        },
-      );
 
-      // Forward the response from the API call to the next middleware or route handler
-      res.locals.apiResponse = response.data;
-      console.log("Response", response.data)
+  async use(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const url =
+        'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+      const auth = Buffer.from(
+        `${this.configService.get(
+          'SAFARICOM_CONSUMER_KEY',
+        )}:${this.configService.get('SAFARICOM_CONSUMER_SECRET')}`,
+      ).toString('base64');
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
+      });
+
+      console.log("MPESA TOKEN", response.data)
+      req.access_token = response.data.access_token;
       next();
     } catch (error) {
-      // Handle errors if any
+      console.error('Access token error:', error);
       throw new HttpException(
-        'Failed to fetch data from API',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to fetch access token',
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }
