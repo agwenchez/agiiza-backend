@@ -7,11 +7,9 @@ import {
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CategoriesService } from 'src/categories/categories.service';
-import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-// import {prisma} from '../extendedPrismaClient';
 
 @Injectable()
 export class MerchantsService {
@@ -30,17 +28,8 @@ export class MerchantsService {
       lng,
       nearbyLandmarkLat,
       nearbyLandmarkLng,
-      firstName,
-      lastName,
-      storeName,
-      storeAddress,
       email,
-      password,
-      phoneNumber,
-      description,
-      role,
     } = createMerchantDto;
-    // console.log('Merchant', createMerchantDto);
     try {
       // Create or find existing categories
       const categoryPromises = categories.map(async (categoryName) => {
@@ -84,15 +73,8 @@ export class MerchantsService {
       // Create merchant with basic information and connected categories and tags
       const newMerchant = await this.prismaService.merchant.create({
         data: {
-          firstName,
-          lastName,
-          storeName,
-          storeAddress,
-          email,
+         ...createMerchantDto,
           password: hash,
-          phoneNumber,
-          description,
-          role,
           categories: {
             connect: resolvedCategories,
           },
@@ -124,7 +106,10 @@ export class MerchantsService {
       delete newMerchant.password;
       return { merchant: { ...newMerchant }, ...access_token };
     } catch (error) {
-      console.log('Error', error);
+      console.log('Error', error.code);
+      if (error.code === 'P2002') {
+        throw new ForbiddenException('Credentials taken');
+      }
       throw error;
     }
   }

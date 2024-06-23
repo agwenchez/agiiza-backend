@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guard';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OrdersModule } from './orders/orders.module';
       isGlobal: true,
     }),
     OrdersModule,
+    PaymentsModule,
   ],
   providers: [
     {

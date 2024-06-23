@@ -28,11 +28,13 @@ export class MerchantsController {
     return this.merchantsService.merchantLogin(merchantData);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.merchantsService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.merchantsService.findOne(id);

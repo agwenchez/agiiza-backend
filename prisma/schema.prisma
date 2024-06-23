@@ -77,6 +77,43 @@ model Tag {
   @@map("tags")
 }
 
+model Customer {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  email       String   @unique @db.VarChar(100)
+  phoneNumber String   @unique @db.VarChar(100)
+  gender      String   @db.VarChar(100)
+  dateOfBirth String   @db.VarChar(100)
+  firstName   String   @db.VarChar(100)
+  lastName    String   @db.VarChar(100)
+  password    String   @db.VarChar(100)
+  orders      Order[]
+
+  @@map("customers")
+}
+
+model Otp {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  phoneNumber String   @unique
+  otpSecret   String
+  token       String
+
+  @@map("otps")
+}
+
+model Order {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  products   Product[]
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  @@map("orders")
+}
+
 model Product {
   id           String   @id @default(uuid())
   createdAt    DateTime @default(now())
@@ -89,6 +126,8 @@ model Product {
   merchantId   String
   prices       Price[]
   merchant     Merchant @relation(fields: [merchantId], references: [id])
+  Order        Order?   @relation(fields: [orderId], references: [id])
+  orderId      String?
 
   @@map("products")
 }
