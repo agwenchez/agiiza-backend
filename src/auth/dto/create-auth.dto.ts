@@ -28,6 +28,10 @@ export class CreateAuthDto {
   @IsNotEmpty()
   @IsString()
   password;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
 }
 
 

@@ -89,6 +89,7 @@ model Customer {
   lastName    String   @db.VarChar(100)
   password    String   @db.VarChar(100)
   orders      Order[]
+  role        String   @db.VarChar(50)
 
   @@map("customers")
 }

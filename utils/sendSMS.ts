@@ -18,9 +18,8 @@ export const generateOTP = (secret: string): string => {
 };
 
 export const sendSMS = (phone_number: string, msg: string) => {
-  console.log('phone number', phone_number);
-  // phone_number.replace(/^0+/, '+254');
-  // console.log('Phone number replaced==>', phone_number);
+  // const phoneNumber = phone_number.replace(/^[01]/, '+254');
+  // console.log('Phone number replaced==>', phoneNumber);
   const sending_options = {
     to: phone_number,
     message: msg,
@@ -30,7 +29,7 @@ export const sendSMS = (phone_number: string, msg: string) => {
   return sms
     .send(sending_options)
     .then((response) => {
-      console.log(response);
+      console.log("SMS Response",response.SMSMessageData);
       return response;
     })
     .catch((error) => {

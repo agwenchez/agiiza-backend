@@ -28,7 +28,14 @@ export class MerchantsService {
       lng,
       nearbyLandmarkLat,
       nearbyLandmarkLng,
+      firstName,
+      lastName,
+      storeName,
+      storeAddress,
       email,
+      phoneNumber,
+      description,
+      role,
     } = createMerchantDto;
     try {
       // Create or find existing categories
@@ -73,7 +80,14 @@ export class MerchantsService {
       // Create merchant with basic information and connected categories and tags
       const newMerchant = await this.prismaService.merchant.create({
         data: {
-         ...createMerchantDto,
+          firstName,
+          lastName,
+          storeName,
+          storeAddress,
+          email,
+          phoneNumber,
+          description,
+          role,
           password: hash,
           categories: {
             connect: resolvedCategories,
