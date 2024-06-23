@@ -93,6 +93,16 @@ model Customer {
   @@map("customers")
 }
 
+model Otp {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  phoneNumber String   @unique
+  otpSecret   String
+  token       String
+
+  @@map("otps")
+}
+
 model Order {
   id         String    @id @default(uuid())
   createdAt  DateTime  @default(now())
