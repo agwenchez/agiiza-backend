@@ -28,14 +28,14 @@ export class MerchantsService {
       lng,
       nearbyLandmarkLat,
       nearbyLandmarkLng,
-      firstName,
-      lastName,
-      storeName,
-      storeAddress,
       email,
       phoneNumber,
       description,
       role,
+      firstName,
+      lastName,
+      storeName,
+      storeAddress,
     } = createMerchantDto;
     try {
       // Create or find existing categories
